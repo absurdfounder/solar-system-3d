@@ -409,6 +409,7 @@ function buildSaturnRing(inner, outer, color, opacity) {
     const t = (v3.length() - inner) / (outer - inner);
     uv.setXY(i, t, 0);
   }
+  uv.needsUpdate = true;
   return new THREE.Mesh(geo, new THREE.MeshBasicMaterial({
     color, side: THREE.DoubleSide, transparent: true, opacity, depthWrite: false
   }));
@@ -429,7 +430,8 @@ slider.addEventListener('input', () => {
 // ═══════════════════════════════════════════════
 //  LABEL PROJECTION
 // ═══════════════════════════════════════════════
-const _v3 = new THREE.Vector3();
+const _v3  = new THREE.Vector3();
+const _UP  = new THREE.Vector3(0, 1, 0);   // reused in animation loop (avoids per-frame alloc)
 
 function refreshLabels() {
   planets.forEach(p => {
@@ -464,7 +466,7 @@ renderer.setAnimationLoop(() => {
     p.pivot.rotation.y = p.angle;
 
     // Self-rotation on local Y axis (after adding to pivot, need world-space spin)
-    p.mesh.rotateOnWorldAxis(new THREE.Vector3(0,1,0), dt * 0.4 * SPEED);
+    p.mesh.rotateOnWorldAxis(_UP, dt * 0.4 * SPEED);
 
     // Cloud drift
     if (p.data._clouds) {
