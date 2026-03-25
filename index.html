@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,10 +7,48 @@
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
+    /* ── Theme tokens ── */
+    :root {
+      --bg:            #000000;
+      --ui-bg:         rgba(10, 10, 20, 0.75);
+      --ui-border:     rgba(255,255,255,0.1);
+      --label-color:   rgba(255,255,255,0.65);
+      --label-shadow:  rgba(0,0,0,1);
+      --title-color:   rgba(255, 220, 100, 0.9);
+      --meta-color:    rgba(255,255,255,0.4);
+      --ctrl-label:    rgba(255,255,255,0.5);
+      --ctrl-val:      rgba(255,220,100,0.9);
+      --hint-color:    rgba(255,255,255,0.3);
+      --orbit-color:   #3344aa;
+      --orbit-opacity: 0.35;
+      --star-opacity:  0.9;
+      --toggle-bg:     rgba(10,10,20,0.75);
+      --toggle-icon:   '🌙';
+    }
+
+    [data-theme="light"] {
+      --bg:            #d6e4f7;
+      --ui-bg:         rgba(255,255,255,0.80);
+      --ui-border:     rgba(0,0,0,0.12);
+      --label-color:   rgba(20,20,60,0.85);
+      --label-shadow:  rgba(200,220,255,0.9);
+      --title-color:   #b35c00;
+      --meta-color:    rgba(0,0,60,0.45);
+      --ctrl-label:    rgba(0,0,60,0.55);
+      --ctrl-val:      #b35c00;
+      --hint-color:    rgba(0,0,60,0.35);
+      --orbit-color:   #5566cc;
+      --orbit-opacity: 0.25;
+      --star-opacity:  0.0;
+      --toggle-bg:     rgba(255,255,255,0.80);
+      --toggle-icon:   '☀';
+    }
+
     body {
-      background: #000;
+      background: var(--bg);
       overflow: hidden;
       font-family: 'Segoe UI', system-ui, sans-serif;
+      transition: background 0.4s;
     }
 
     canvas { display: block; }
@@ -24,20 +62,23 @@
       justify-content: center;
       gap: 12px;
       padding: 10px 20px;
-      background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, transparent 100%);
+      background: linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 100%);
       pointer-events: none;
       z-index: 20;
+    }
+    [data-theme="light"] #title-bar {
+      background: linear-gradient(to bottom, rgba(200,220,255,0.55) 0%, transparent 100%);
     }
     #title-bar h1 {
       font-size: 14px;
       font-weight: 400;
       letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: rgba(255, 220, 100, 0.9);
+      color: var(--title-color);
     }
     #title-bar span {
       font-size: 11px;
-      color: rgba(255,255,255,0.4);
+      color: var(--meta-color);
       letter-spacing: 0.1em;
     }
 
@@ -50,17 +91,19 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      background: rgba(10, 10, 20, 0.75);
-      border: 1px solid rgba(255,255,255,0.1);
+      background: var(--ui-bg);
+      border: 1px solid var(--ui-border);
       padding: 8px 18px;
       border-radius: 30px;
       z-index: 20;
+      backdrop-filter: blur(6px);
+      transition: background 0.4s, border-color 0.4s;
     }
     #speed-wrap label {
       font-size: 11px;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: rgba(255,255,255,0.5);
+      color: var(--ctrl-label);
     }
     #speed-slider {
       width: 130px;
@@ -69,7 +112,7 @@
     }
     #speed-val {
       font-size: 12px;
-      color: rgba(255,220,100,0.9);
+      color: var(--ctrl-val);
       min-width: 32px;
       text-align: right;
     }
@@ -83,12 +126,12 @@
     }
     .plabel {
       position: absolute;
-      color: rgba(255,255,255,0.65);
+      color: var(--label-color);
       font-size: 10px;
       letter-spacing: 0.12em;
       text-transform: uppercase;
       transform: translate(-50%, calc(-100% - 10px));
-      text-shadow: 0 0 8px rgba(0,0,0,1), 0 0 4px rgba(0,0,0,1);
+      text-shadow: 0 0 8px var(--label-shadow), 0 0 4px var(--label-shadow);
       white-space: nowrap;
       pointer-events: none;
     }
@@ -98,13 +141,37 @@
       position: fixed;
       bottom: 20px;
       right: 20px;
-      color: rgba(255,255,255,0.3);
+      color: var(--hint-color);
       font-size: 10px;
       line-height: 1.8;
       text-align: right;
       z-index: 20;
       pointer-events: none;
     }
+
+    /* ── Theme toggle button ── */
+    #theme-toggle {
+      position: fixed;
+      top: 14px;
+      right: 18px;
+      z-index: 30;
+      background: var(--toggle-bg);
+      border: 1px solid var(--ui-border);
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 17px;
+      line-height: 1;
+      backdrop-filter: blur(6px);
+      transition: background 0.3s, border-color 0.3s, transform 0.2s;
+      user-select: none;
+    }
+    #theme-toggle:hover { transform: scale(1.12); }
+    #theme-toggle:active { transform: scale(0.95); }
   </style>
 </head>
 <body>
@@ -114,6 +181,8 @@
   <span>·</span>
   <span>All 8 planets · Three.js</span>
 </div>
+
+<button id="theme-toggle" title="Toggle dark / light mode">🌙</button>
 
 <div id="speed-wrap">
   <label>Speed</label>
@@ -143,16 +212,60 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 // ═══════════════════════════════════════════════
+//  THEME STATE
+// ═══════════════════════════════════════════════
+const html = document.documentElement;
+const toggleBtn = document.getElementById('theme-toggle');
+let isDark = true;
+
+// Scene background colours
+const DARK_BG  = new THREE.Color(0x000000);
+const LIGHT_BG = new THREE.Color(0xc8dcf7);
+
+toggleBtn.addEventListener('click', () => {
+  isDark = !isDark;
+  html.dataset.theme = isDark ? 'dark' : 'light';
+  toggleBtn.textContent = isDark ? '🌙' : '☀️';
+
+  // Update Three.js scene bg + fog
+  renderer.setClearColor(isDark ? DARK_BG : LIGHT_BG, 1);
+  scene.background = isDark ? DARK_BG : LIGHT_BG;
+  scene.fog = isDark
+    ? new THREE.FogExp2(0x000000, 0.00008)
+    : new THREE.Fog(LIGHT_BG, 600, 1400);
+
+  // Starfield visibility
+  stars.material.opacity = isDark ? 0.9 : 0.0;
+
+  // Orbit ring colours
+  orbitRings.forEach(r => {
+    r.material.color.set(isDark ? 0x3344aa : 0x5566cc);
+    r.material.opacity = isDark ? 0.35 : 0.25;
+  });
+
+  // Ambient light
+  ambientLight.color.set(isDark ? 0x111133 : 0x556688);
+  ambientLight.intensity = isDark ? 1.0 : 2.5;
+
+  // Sun brightness
+  sunLight.intensity = isDark ? 4.0 : 2.8;
+});
+
+// ═══════════════════════════════════════════════
 //  RENDERER & SCENE
 // ═══════════════════════════════════════════════
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setSize(innerWidth, innerHeight);
+renderer.setClearColor(DARK_BG, 1);
 renderer.shadowMap.enabled = true;
-renderer.shadowMap.type   = THREE.PCFSoftShadowMap;
-document.body.appendChild(renderer.domElement);
+renderer.shadowMap.type    = THREE.PCFSoftShadowMap;
+document.body.insertBefore(renderer.domElement, document.body.firstChild);
 
 const scene  = new THREE.Scene();
+scene.background = DARK_BG;
+scene.fog = new THREE.FogExp2(0x000000, 0.00008);
+
 const camera = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, 0.1, 15000);
 camera.position.set(0, 70, 200);
 camera.lookAt(0, 0, 0);
@@ -174,24 +287,25 @@ window.addEventListener('resize', () => {
 // ═══════════════════════════════════════════════
 //  STARFIELD
 // ═══════════════════════════════════════════════
+let stars;
 {
   const count = 10000;
   const pos   = new Float32Array(count * 3);
   for (let i = 0; i < count * 3; i++) pos[i] = (Math.random() - 0.5) * 8000;
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-  scene.add(new THREE.Points(geo, new THREE.PointsMaterial({
+  stars = new THREE.Points(geo, new THREE.PointsMaterial({
     color: 0xffffff, size: 0.8, sizeAttenuation: true, transparent: true, opacity: 0.9
-  })));
+  }));
+  scene.add(stars);
 }
 
 // ═══════════════════════════════════════════════
 //  LIGHTING
 // ═══════════════════════════════════════════════
-// Ambient — keeps far planets visible
-scene.add(new THREE.AmbientLight(0x111133, 1.0));
+const ambientLight = new THREE.AmbientLight(0x111133, 1.0);
+scene.add(ambientLight);
 
-// Sun — main point light
 const sunLight = new THREE.PointLight(0xfff5c0, 4.0, 1200, 1.5);
 sunLight.castShadow = true;
 sunLight.shadow.mapSize.set(1024, 1024);
@@ -213,7 +327,6 @@ const sun = new THREE.Mesh(
 );
 scene.add(sun);
 
-// Glow halos
 [
   { r: SUN_R * 1.18, o: 0.14, c: 0xff9900 },
   { r: SUN_R * 1.38, o: 0.07, c: 0xff6600 },
@@ -230,11 +343,8 @@ scene.add(sun);
 
 // ═══════════════════════════════════════════════
 //  PLANET DATA
-//  Sizes scaled relative to Earth=1 (compressed
-//  but proportionally correct).
-//  Distances/periods use visual scale.
 // ═══════════════════════════════════════════════
-const EARTH_R = 1.6;   // visual Earth radius (scene units)
+const EARTH_R = 1.6;
 
 const PLANET_DATA = [
   {
@@ -272,7 +382,7 @@ const PLANET_DATA = [
   },
   {
     name:    'Jupiter',
-    rFactor: 3.50,   // ~11x Earth → scaled down to avoid dominating
+    rFactor: 3.50,
     dist:    120,
     period:  4333,
     color:   0xc88b3a, emissive: 0x1a0800,
@@ -307,8 +417,9 @@ const PLANET_DATA = [
 ];
 
 // ═══════════════════════════════════════════════
-//  BUILD ORBIT RINGS (flat rings on XZ plane)
+//  ORBIT RINGS
 // ═══════════════════════════════════════════════
+const orbitRings = [];
 function makeOrbitRing(r) {
   const geo = new THREE.RingGeometry(r - 0.06, r + 0.06, 160);
   const mat = new THREE.MeshBasicMaterial({
@@ -317,8 +428,8 @@ function makeOrbitRing(r) {
   const m = new THREE.Mesh(geo, mat);
   m.rotation.x = -Math.PI / 2;
   scene.add(m);
+  orbitRings.push(m);
 }
-
 PLANET_DATA.forEach(d => makeOrbitRing(d.dist));
 
 // ═══════════════════════════════════════════════
@@ -330,12 +441,10 @@ const labelDiv = document.getElementById('planet-labels');
 PLANET_DATA.forEach((data, i) => {
   const radius = EARTH_R * data.rFactor;
 
-  // ── Pivot for orbit
   const pivot = new THREE.Object3D();
-  pivot.rotation.y = (i / PLANET_DATA.length) * Math.PI * 2; // stagger start angles
+  pivot.rotation.y = (i / PLANET_DATA.length) * Math.PI * 2;
   scene.add(pivot);
 
-  // ── Planet mesh
   const mat = new THREE.MeshStandardMaterial({
     color:    data.color,
     emissive: data.emissive,
@@ -349,7 +458,6 @@ PLANET_DATA.forEach((data, i) => {
   mesh.position.x    = data.dist;
   pivot.add(mesh);
 
-  // ── Earth cloud layer
   if (data.clouds) {
     const clouds = new THREE.Mesh(
       new THREE.SphereGeometry(radius * 1.015, 48, 48),
@@ -362,7 +470,6 @@ PLANET_DATA.forEach((data, i) => {
     data._clouds = clouds;
   }
 
-  // ── Jupiter atmospheric bands (torus rings)
   if (data.bands) {
     const bColors = [0xb87030, 0xd4a060, 0xa06020, 0xe0b878, 0xc09050];
     [-0.55, -0.28, 0, 0.28, 0.55].forEach((phi, bi) => {
@@ -377,19 +484,15 @@ PLANET_DATA.forEach((data, i) => {
     });
   }
 
-  // ── Saturn ring system
   if (data.ring) {
-    // Main bright ring
     const ringA = buildSaturnRing(radius * 1.35, radius * 2.28, 0xd4b96a, 0.70);
     ringA.rotation.x = Math.PI / 2.15;
     mesh.add(ringA);
-    // Outer faint ring
     const ringB = buildSaturnRing(radius * 2.38, radius * 2.75, 0xc0a050, 0.35);
     ringB.rotation.x = Math.PI / 2.15;
     mesh.add(ringB);
   }
 
-  // ── Label
   const lbl = document.createElement('div');
   lbl.className   = 'plabel';
   lbl.textContent = data.name;
@@ -400,7 +503,6 @@ PLANET_DATA.forEach((data, i) => {
 
 function buildSaturnRing(inner, outer, color, opacity) {
   const geo = new THREE.RingGeometry(inner, outer, 128);
-  // Fix UVs for gradient rendering
   const pos = geo.attributes.position;
   const uv  = geo.attributes.uv;
   const v3  = new THREE.Vector3();
@@ -431,44 +533,38 @@ slider.addEventListener('input', () => {
 //  LABEL PROJECTION
 // ═══════════════════════════════════════════════
 const _v3  = new THREE.Vector3();
-const _UP  = new THREE.Vector3(0, 1, 0);   // reused in animation loop (avoids per-frame alloc)
+const _UP  = new THREE.Vector3(0, 1, 0);
 
 function refreshLabels() {
   planets.forEach(p => {
     p.mesh.getWorldPosition(_v3);
     _v3.project(camera);
-    if (_v3.z >= 1) {            // behind camera
+    if (_v3.z >= 1) {
       p.label.style.display = 'none';
       return;
     }
     p.label.style.display = 'block';
-    p.label.style.left = ((  _v3.x * 0.5 + 0.5) * innerWidth)  + 'px';
-    p.label.style.top  = (( -_v3.y * 0.5 + 0.5) * innerHeight) + 'px';
+    p.label.style.left = (( _v3.x * 0.5 + 0.5) * innerWidth)  + 'px';
+    p.label.style.top  = ((-_v3.y * 0.5 + 0.5) * innerHeight) + 'px';
   });
 }
 
 // ═══════════════════════════════════════════════
 //  ANIMATION LOOP
 // ═══════════════════════════════════════════════
-const BASE_SPEED = 0.20;   // Earth completes ~1 rev per 365 "ticks"
+const BASE_SPEED = 0.20;
 const clock      = new THREE.Clock();
 
 renderer.setAnimationLoop(() => {
   const dt = clock.getDelta();
 
-  // Sun slow spin
   sun.rotation.y += dt * 0.08;
 
   planets.forEach(p => {
-    // Orbital revolution (Kepler: speed ∝ 1/period)
     const dA = (BASE_SPEED / p.data.period) * dt * SPEED * 60;
     p.angle += dA;
     p.pivot.rotation.y = p.angle;
-
-    // Self-rotation on local Y axis (after adding to pivot, need world-space spin)
     p.mesh.rotateOnWorldAxis(_UP, dt * 0.4 * SPEED);
-
-    // Cloud drift
     if (p.data._clouds) {
       p.data._clouds.rotation.y += dt * 0.05 * SPEED;
     }
